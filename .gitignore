@@ -8,4 +8,4 @@ Session.vim
 .netrwhist
 *~
 
-.gitignore
+output_real.txt
