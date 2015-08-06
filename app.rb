@@ -46,7 +46,16 @@ class BrandFactoryRecommender
     factories_count = line_factories.count
     return pairs if factories_count == 0
 
-    # FIXME: Use unique bilinear approach to build pairs 
+    # FIXME: Use unique bilinear approach to build pairs.
+    # Go through the larger half and begin pairing accordingly.
+
+    # Split list into two halfs.
+    upper_half = line_factories.slice(0, factories_count / 2)
+    lower_half = line_factories.slice(factories_count / 2, factories_count - 1)
+
+    upper_half.each do |entry|
+      lower_half.each { |second_entry| pairs << "#{entry},#{second_entry}" }
+    end
 
     pairs
   end
