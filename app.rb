@@ -37,7 +37,7 @@ class BrandFactoryRecommender
 
   def add_new_pairs(pairs)
     pairs.each do |pair|
-      @known_pairs << pair
+      @known_pairs << pair unless @known_pairs.include? pair
     end
   end
 
@@ -46,10 +46,6 @@ class BrandFactoryRecommender
     factories_count = line_factories.count
     return pairs if factories_count == 0
 
-    # FIXME: Use unique bilinear approach to build pairs.
-    # Go through the larger half and begin pairing accordingly.
-
-    # Split list into two halfs.
     upper_half = line_factories.slice(0, factories_count / 2)
     lower_half = line_factories.slice(factories_count / 2, factories_count - 1)
 
