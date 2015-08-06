@@ -32,11 +32,7 @@ class BrandFactoryRecommender
       { pair: pair, count: count }
     end
 
-    pair_counts = pair_counts.delete_if do |value|
-      value[:count] < 3
-    end
-
-    pair_counts
+    pair_counts.delete_if { |v| v[:count] < 3 }
   end
 
   def add_new_pairs(pairs)
@@ -46,18 +42,15 @@ class BrandFactoryRecommender
   end
 
   def get_pairs_from_tokens(line_factories)
-    factories_count = line_factories.count
-    return [] if factories_count == 0
-
     pairs = []
-    until line_factories[1].nil?
-      fetched_pair = [line_factories.shift, line_factories[0]]
-      pairs << fetched_pair
-    end
+    factories_count = line_factories.count
+    return pairs if factories_count == 0
+
+    # FIXME: Use unique bilinear approach to build pairs 
 
     pairs
   end
-  
+
   def pretty_print(pairs)
     strings = pairs.map { |pair| pair[:pair].sort.join ',' }
     strings.sort.each { |str| puts str }
