@@ -35,7 +35,8 @@ class BrandFactoryRecommender
     log_tuple = line.split(',').freeze
     brand = log_tuple.last.freeze
     factories = log_tuple[0..1]
-    @known_factories << factories
+    @known_factories += factories
+
     {
       brand: brand,
       factories: factories
@@ -45,18 +46,23 @@ class BrandFactoryRecommender
   def parse_logs(lines)
     clear_history
 
-    # one 'n' loop
     lines.sort.each do |line|
       brand_log = parse_brand_log line
       update_history brand_log
     end
 
-    # second 'n' loop
-    @known_factories.each do |known_factory|
+    factory_to_brand = {}
+    @known_factories.uniq.each do |known_factory|
+      factory_to_brand[known_factory] = []
 
+      @history.keys.each do |brand|
+        factory_to_brand[known_factory] << brand if @history[brand].include? known_factory
+      end
     end
 
-    ap @history
+    #ap @history
+    #ap @known_factories.uniq
+    ap factory_to_brand
   end
 end
 
