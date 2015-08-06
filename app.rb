@@ -5,64 +5,44 @@ class BrandFactoryRecommender
   attr_accessor :minimum
 
   def initialize
-    clear_history
-    @known_factories = []
+    @known_pairs
   end
 
-  def clear_history
-    @history = {}
-  end
-
-  def update_history(brand_log)
-    brand = brand_log[:brand]
-    current_factories = @history[brand]
-    @history[brand] = [] if current_factories.nil?
-    @history[brand] += brand_log[:factories]
-  end
-
-  def sort_factories_in_history
-    @history.each do |_, value|
-      value.sort!
-    end
-  end
-
+  # Takes the raw input, be it from a file or STDIN and preps the recommender.
   def parse_raw(lines)
     minimum = lines.shift.to_i
-    parse_logs lines
+    parse_logs(lines)
   end
 
-  def parse_brand_log(line)
-    log_tuple = line.split(',').freeze
-    brand = log_tuple.last.freeze
-    factories = log_tuple[0..1]
-    @known_factories += factories
-
-    {
-      brand: brand,
-      factories: factories
-    }
-  end
-
+  # Walks through every line and attempts to parse it.
   def parse_logs(lines)
-    clear_history
-
-    lines.sort.each do |line|
-      brand_log = parse_brand_log line
-      update_history brand_log
+    lines.each do |line|
+      line_factories = line.split ','
+      available_pairs = get_pairs_from_tokens(line_factories)
+      add_new_pairs(available_pairs)
     end
 
-    factory_to_brand = {}
-    @known_factories.uniq.each do |known_factory|
-      factory_to_brand[known_factory] = []
+    pairs
+  end
 
-      @history.keys.each do |brand|
-        factory_to_brand[known_factory] << brand if @history[brand].include? known_factory
-      end
+  def add_new_pairs(pairs)
+    pairs.each do |pair|
+      @known_pairs << pair unless @known_pairs.include? pair
+    end
+  end
+
+  def get_pairs_from_tokens(line_factories)
+    pair_count = line_factories.count - 1
+    return [] if pair_count == 0
+
+    pairs = []
+    until line_factories.empty?
+      fetched_pair = [line_factories.shift, line_factories[0]]
+      break if fetched_pair[1].nil?
+      pairs << fetched_pair
     end
 
-    #ap @history
-    #ap @known_factories.uniq
-    ap factory_to_brand
+    pairs
   end
 end
 
