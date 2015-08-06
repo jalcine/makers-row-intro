@@ -59,7 +59,7 @@ class BrandFactoryRecommender
   end
   
   def pretty_print(pairs)
-    strings = pairs.map { |pair| pair[:pair].sort.join',' }
+    strings = pairs.map { |pair| pair[:pair].sort.join ',' }
     strings.sort.each { |str| puts str }
   end
 end
