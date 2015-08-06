@@ -25,7 +25,7 @@ class BrandFactoryRecommender
 
     pair_counts = @known_pairs.uniq.map do |pair|
       count = 0
-      pair_regex = /#{pair[0]},#{pair[1]}/
+      pair_regex = /#{pair.first},#{pair.last}/
       lines.each do |line|
         count += 1 if line.match(pair_regex)
       end
@@ -58,10 +58,11 @@ class BrandFactoryRecommender
 
   def pretty_print(pairs)
     strings = pairs.map { |pair| pair[:pair].sort.join ',' }
-    strings.sort.each { |str| puts str }
+    strings.sort
   end
 end
 
 input_lines = STDIN.read.split("\n")
 recommender = BrandFactoryRecommender.new
-recommender.parse_raw input_lines
+recommended_factories = recommender.parse_raw input_lines
+puts recommended_factories
