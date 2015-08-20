@@ -2,15 +2,12 @@
 require 'awesome_print'
 
 class BrandFactoryRecommender
-  attr_accessor :minimum
-
   def initialize
     @known_pairs = []
   end
 
   # Takes the raw input, be it from a file or STDIN and preps the recommender.
   def parse_raw(lines)
-    minimum = lines.shift.to_i
     pairs = parse_logs(lines)
     pretty_print(pairs)
   end
@@ -24,20 +21,20 @@ class BrandFactoryRecommender
     end
 
     pair_counts = @known_pairs.uniq.map do |pair|
-      count = 0
       pair_regex = /#{pair.first},#{pair.last}/
+      count = 0
       lines.each do |line|
         count += 1 if line.match(pair_regex)
       end
       { pair: pair, count: count }
     end
 
-    pair_counts.delete_if { |v| v[:count] < 3 }
+    pair_counts.delete_if { |v| v[:count] < 2 }
   end
 
   def add_new_pairs(pairs)
     pairs.each do |pair|
-      @known_pairs << pair unless @known_pairs.include? pair
+      @known_pairs << pair.split(',')
     end
   end
 
@@ -57,12 +54,11 @@ class BrandFactoryRecommender
   end
 
   def pretty_print(pairs)
-    strings = pairs.map { |pair| pair[:pair].sort.join ',' }
-    strings.sort
+    pairs.map { |pair| pair[:pair].sort.join ',' }.sort
   end
 end
 
 input_lines = STDIN.read.split("\n")
 recommender = BrandFactoryRecommender.new
-recommended_factories = recommender.parse_raw input_lines
+recommended_factories = recommender.parse_raw(input_lines)
 puts recommended_factories
